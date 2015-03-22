@@ -1,4 +1,4 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
+# #### BEGIN GPL LICENSE BLOCK ####
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -14,7 +14,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
-# ##### END GPL LICENSE BLOCK #####
+# #### END GPL LICENSE BLOCK ####
 
 import os
 import json
@@ -39,13 +39,12 @@ logging.basicConfig(
 bl_info = {
     'name': "Three.js Format",
     'author': "repsac, mrdoob, yomotsu, mpk, jpweeks, rkusa",
-    'version': (1, 4, 0),
+    'version': (1, 4, 1),
     'blender': (2, 7, 3),
     'location': "File > Export",
     'description': "Export Three.js formatted JSON files.",
-    'warning': "Importer not included.",
-    'wiki_url': "https://github.com/mrdoob/three.js/tree/"\
-        "master/utils/exporters/blender",
+    'wiki_url': ("https://github.com/mrdoob/three.js/tree/"
+                 "master/utils/exporters/blender"),
     'tracker_url':  "https://github.com/mrdoob/three.js/issues",
     'category': 'Import-Export'
 }
@@ -72,6 +71,7 @@ bpy.types.Mesh.THREE_geometry_type = EnumProperty(
     items=_geometry_types(),
     default=constants.GLOBAL)
 
+
 class ThreeMesh(bpy.types.Panel):
     """Creates custom properties on a mesh node"""
 
@@ -91,6 +91,7 @@ class ThreeMesh(bpy.types.Panel):
             row.prop(context.mesh,
                      'THREE_geometry_type',
                      text="Type")
+
 
 def _blending_types(index):
     """Supported blending types for Three.js
@@ -116,6 +117,7 @@ bpy.types.Material.THREE_blending_type = EnumProperty(
 
 bpy.types.Material.THREE_depth_write = BoolProperty(default=True)
 bpy.types.Material.THREE_depth_test = BoolProperty(default=True)
+
 
 class ThreeMaterial(bpy.types.Panel):
     """Adds custom properties to the Materials of an object"""
@@ -150,6 +152,7 @@ class ThreeMaterial(bpy.types.Panel):
             row.prop(mat, 'THREE_depth_test',
                      text="Enable depth testing")
 
+
 def _mag_filters(index):
     """Three.js mag filters
 
@@ -166,6 +169,7 @@ bpy.types.Texture.THREE_mag_filter = EnumProperty(
     name="Mag Filter",
     items=[_mag_filters(x) for x in range(2)],
     default=constants.LINEAR_FILTERS.LINEAR)
+
 
 def _min_filters(index):
     """Three.js min filters
@@ -188,6 +192,7 @@ bpy.types.Texture.THREE_min_filter = EnumProperty(
     items=[_min_filters(x) for x in range(6)],
     default=constants.LINEAR_FILTERS.MIP_MAP_LINEAR)
 
+
 def _mapping(index):
     """Three.js texture mappings types
 
@@ -207,6 +212,7 @@ bpy.types.Texture.THREE_mapping = EnumProperty(
     items=[_mapping(x) for x in range(4)],
     default=constants.MAPPING_TYPES.UV)
 
+
 class ThreeTexture(bpy.types.Panel):
     """Adds custom properties to a texture"""
     bl_label = 'THREE'
@@ -214,7 +220,6 @@ class ThreeTexture(bpy.types.Panel):
     bl_region_type = 'WINDOW'
     bl_context = 'texture'
 
-    #@TODO: possible to make cycles compatible?
     def draw(self, context):
         """
 
@@ -236,6 +241,7 @@ class ThreeTexture(bpy.types.Panel):
 
 bpy.types.Object.THREE_export = bpy.props.BoolProperty(default=True)
 
+
 class ThreeObject(bpy.types.Panel):
     """Adds custom properties to an object"""
     bl_label = 'THREE'
@@ -255,6 +261,7 @@ class ThreeObject(bpy.types.Panel):
         row = layout.row()
         row.prop(obj, 'THREE_export', text='Export')
 
+
 class ThreeExportSettings(bpy.types.Operator):
     """Save the current export settings (gets saved in .blend)"""
     bl_label = "Save Settings"
@@ -264,11 +271,13 @@ class ThreeExportSettings(bpy.types.Operator):
         cycles = context.scene.cycles
         cycles.use_samples_final = True
 
-        context.scene[constants.EXPORT_SETTINGS_KEY] = set_settings(context.active_operator.properties)
+        context.scene[constants.EXPORT_SETTINGS_KEY] = \
+            set_settings(context.active_operator.properties)
 
         self.report({"INFO"}, "Three Export Settings Saved")
 
         return {"FINISHED"}
+
 
 def restore_export_settings(properties, settings):
     """Restore the settings
@@ -277,7 +286,7 @@ def restore_export_settings(properties, settings):
 
     """
 
-    ## Geometry {
+    # Geometry {
     properties.option_vertices = settings.get(
         constants.VERTICES,
         constants.EXPORT_OPTIONS[constants.VERTICES])
@@ -304,9 +313,9 @@ def restore_export_settings(properties, settings):
     properties.option_geometry_type = settings.get(
         constants.GEOMETRY_TYPE,
         constants.EXPORT_OPTIONS[constants.GEOMETRY_TYPE])
-    ## }
+    # }
 
-    ## Materials {
+    # Materials {
     properties.option_materials = settings.get(
         constants.MATERIALS,
         constants.EXPORT_OPTIONS[constants.MATERIALS])
@@ -330,9 +339,9 @@ def restore_export_settings(properties, settings):
     properties.option_mix_colors = settings.get(
         constants.MIX_COLORS,
         constants.EXPORT_OPTIONS[constants.MIX_COLORS])
-    ## }
+    # }
 
-    ## Settings {
+    # Settings {
     properties.option_scale = settings.get(
         constants.SCALE,
         constants.EXPORT_OPTIONS[constants.SCALE])
@@ -368,16 +377,16 @@ def restore_export_settings(properties, settings):
     properties.option_embed_animation = settings.get(
         constants.EMBED_ANIMATION,
         constants.EXPORT_OPTIONS[constants.EMBED_ANIMATION])
-    ## }
+    # }
 
-    ## Scene {
+    # Scene {
     properties.option_export_scene = settings.get(
         constants.SCENE,
         constants.EXPORT_OPTIONS[constants.SCENE])
 
-    #properties.option_embed_geometry = settings.get(
-    #    constants.EMBED_GEOMETRY,
-    #    constants.EXPORT_OPTIONS[constants.EMBED_GEOMETRY])
+#    properties.option_embed_geometry = settings.get(
+#        constants.EMBED_GEOMETRY,
+#        constants.EXPORT_OPTIONS[constants.EMBED_GEOMETRY])
 
     properties.option_lights = settings.get(
         constants.LIGHTS,
@@ -390,9 +399,9 @@ def restore_export_settings(properties, settings):
     properties.option_hierarchy = settings.get(
         constants.HIERARCHY,
         constants.EXPORT_OPTIONS[constants.HIERARCHY])
-    ## }
+    # }
 
-    ## Animation {
+    # Animation {
     properties.option_animation_morph = settings.get(
         constants.MORPH_TARGETS,
         constants.EXPORT_OPTIONS[constants.MORPH_TARGETS])
@@ -408,7 +417,8 @@ def restore_export_settings(properties, settings):
     properties.option_frame_index_as_time = settings.get(
         constants.FRAME_INDEX_AS_TIME,
         constants.EXPORT_OPTIONS[constants.FRAME_INDEX_AS_TIME])
-    ## }
+    # }
+
 
 def set_settings(properties):
     """Set the export settings to the correct keys.
@@ -443,7 +453,6 @@ def set_settings(properties):
         constants.TEXTURE_FOLDER: properties.option_texture_folder,
 
         constants.SCENE: properties.option_export_scene,
-        #constants.EMBED_GEOMETRY: properties.option_embed_geometry,
         constants.EMBED_ANIMATION: properties.option_embed_animation,
         constants.LIGHTS: properties.option_lights,
         constants.CAMERAS: properties.option_cameras,
@@ -455,6 +464,8 @@ def set_settings(properties):
         constants.FRAME_INDEX_AS_TIME: properties.option_frame_index_as_time,
         constants.INFLUENCES_PER_VERTEX: properties.option_influences
     }
+
+#        constants.EMBED_GEOMETRY: properties.option_embed_geometry,
 
     return settings
 
@@ -490,6 +501,7 @@ def animation_options():
     ]
 
     return anim
+
 
 class ExportThree(bpy.types.Operator, ExportHelper):
     """Class that handles the export properties"""
@@ -600,12 +612,12 @@ class ExportThree(bpy.types.Operator, ExportHelper):
         description="Export scene",
         default=constants.EXPORT_OPTIONS[constants.SCENE])
 
-    #@TODO: removing this option since the ObjectLoader doesn't have
-    #       support for handling external geometry data
-    #option_embed_geometry = BoolProperty(
-    #    name="Embed geometry",
-    #    description="Embed geometry",
-    #    default=constants.EXPORT_OPTIONS[constants.EMBED_GEOMETRY])
+#    @TODO: removing this option since the ObjectLoader doesn't have
+#           support for handling external geometry data
+#    option_embed_geometry = BoolProperty(
+#        name="Embed geometry",
+#        description="Embed geometry",
+#        default=constants.EXPORT_OPTIONS[constants.EMBED_GEOMETRY])
 
     option_embed_animation = BoolProperty(
         name="Embed animation",
@@ -735,7 +747,7 @@ class ExportThree(bpy.types.Operator, ExportHelper):
         """
         layout = self.layout
 
-        ## Geometry {
+        # Geometry {
         row = layout.row()
         row.label(text="GEOMETRY:")
 
@@ -754,11 +766,11 @@ class ExportThree(bpy.types.Operator, ExportHelper):
         row = layout.row()
         row.prop(self.properties, 'option_geometry_type')
 
-        ## }
+        # }
 
         layout.separator()
 
-        ## Materials {
+        # Materials {
         row = layout.row()
         row.label(text="- Shading:")
 
@@ -770,11 +782,11 @@ class ExportThree(bpy.types.Operator, ExportHelper):
 
         row = layout.row()
         row.prop(self.properties, 'option_mix_colors')
-        ## }
+        # }
 
         layout.separator()
 
-        ## Animation {
+        # Animation {
         row = layout.row()
         row.label(text="- Animation:")
 
@@ -800,11 +812,11 @@ class ExportThree(bpy.types.Operator, ExportHelper):
         row = layout.row()
         row.prop(self.properties, 'option_embed_animation')
 
-        ## }
+        # }
 
         layout.separator()
 
-        ## Scene {
+        # Scene {
         row = layout.row()
         row.label(text="SCENE:")
 
@@ -812,20 +824,20 @@ class ExportThree(bpy.types.Operator, ExportHelper):
         row.prop(self.properties, 'option_export_scene')
         row.prop(self.properties, 'option_materials')
 
-        #row = layout.row()
-        #row.prop(self.properties, 'option_embed_geometry')
+#        row = layout.row()
+#        row.prop(self.properties, 'option_embed_geometry')
 
         row = layout.row()
         row.prop(self.properties, 'option_lights')
         row.prop(self.properties, 'option_cameras')
-        ## }
+        # }
 
         row = layout.row()
         row.prop(self.properties, 'option_hierarchy')
 
         layout.separator()
 
-        ## Settings {
+        # Settings {
         row = layout.row()
         row.label(text="SETTINGS:")
 
@@ -862,17 +874,16 @@ class ExportThree(bpy.types.Operator, ExportHelper):
 
         row = layout.row()
         row.prop(self.properties, 'option_indent')
-        ## }
+        # }
 
-        ## Operators {
+        # Operators {
         has_settings = context.scene.get(constants.EXPORT_SETTINGS_KEY, False)
         row = layout.row()
         row.operator(
             ThreeExportSettings.bl_idname,
             ThreeExportSettings.bl_label,
             icon="%s" % "PINNED" if has_settings else "UNPINNED")
-        ## }
-
+        # }
 
 
 def menu_func_export(self, context):
